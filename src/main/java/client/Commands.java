@@ -1,5 +1,8 @@
 package main.java.client;
 
+/**
+ * This enum defines a set of commands for a chat application along with their descriptions
+ */
 public enum Commands {
     QUIT ("User to exit the chat by typing /quit."),
     LIST ("List all the connected clients by typing /list."),

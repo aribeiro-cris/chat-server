@@ -12,7 +12,11 @@ public class Server {
         this.port = port;
     }
 
-    public void start() {
+    /**
+     * This method starts a chat server, listens for incoming client connections
+     * Creates a separate thread to handle each client's communication.
+     */
+    public void init() {
 
         try {
 
@@ -46,6 +50,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server(8080);
-        server.start();
+        server.init();
     }
 }
