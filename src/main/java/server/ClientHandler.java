@@ -1,14 +1,16 @@
-package main.java.client;
+package main.java.server;
+import main.java.client.Commands;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
     private String username;
-    public static ArrayList<ClientHandler> availableClients = new ArrayList<>(); //allows duplicate usernames, how to prevent this?
+    public static CopyOnWriteArrayList<ClientHandler> availableClients = new CopyOnWriteArrayList<>();
     private Commands[] commands = Commands.values();
 
     public ClientHandler(Socket socket) {

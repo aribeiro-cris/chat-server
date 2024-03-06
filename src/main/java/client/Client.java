@@ -2,6 +2,7 @@ package main.java.client;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
 
@@ -11,11 +12,17 @@ public class Client {
     private BufferedWriter writer;
     private BufferedReader keyboardReader;
 
-    public Client(String serverAddress, int serverPort, String username) throws IOException {
-        this.socket = new Socket(serverAddress, serverPort);
-        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        this.keyboardReader = new BufferedReader(new InputStreamReader(System.in));
+    public Client(String serverAddress, int serverPort, String username) {
+
+        try {
+            this.socket = new Socket(serverAddress, serverPort);
+            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.keyboardReader = new BufferedReader(new InputStreamReader(System.in));
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
         this.username = username;
     }
 
@@ -91,10 +98,10 @@ public class Client {
         this.username = username;
     }
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader keyboardReader = new BufferedReader(new InputStreamReader(System.in));
+    public static void main(String[] args) {
+        Scanner keyboardScanner = new Scanner(System.in);
         System.out.println("Enter your username for the group chat: ");
-        String username = keyboardReader.readLine();
+        String username = keyboardScanner.nextLine();
 
         Client client = new Client("localhost", 8080, username);
         client.readMessages();

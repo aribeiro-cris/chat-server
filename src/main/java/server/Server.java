@@ -1,6 +1,5 @@
 package main.java.server;
 
-import main.java.client.ClientHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,12 +12,14 @@ public class Server {
         this.port = port;
     }
 
-    public void start() throws IOException {
+    public void start() {
+
+        try {
 
         serverSocket = new ServerSocket(port);
         System.out.println("Chat Server is running...");
+
         while (true) {
-            try {
                 Socket clientSocket = serverSocket.accept();
 
                 clients = new ClientHandler(clientSocket);
@@ -26,10 +27,10 @@ public class Server {
 
                 Thread thread = new Thread(clients);
                 thread.start();
-
-            } catch (IOException e) {
-                closeServerSocket();
             }
+
+        } catch (IOException e) {
+            closeServerSocket();
         }
     }
 
@@ -43,7 +44,7 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Server server = new Server(8080);
         server.start();
     }
