@@ -14,9 +14,9 @@ public class Client {
 
     /**
      * Creates a client object to connect to a server at a given address and port
-     * @param serverAddress
-     * @param serverPort
-     * @param username
+     * @param serverAddress the server address
+     * @param serverPort the server port
+     * @param username the client's username
      */
     public Client(String serverAddress, int serverPort, String username) {
 
@@ -25,8 +25,9 @@ public class Client {
             this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.writer = new PrintWriter(socket.getOutputStream(), true);
             this.keyboardScanner = new Scanner(System.in);
-        } catch (IOException i) {
-            i.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Error connecting to the server: " + e.getMessage());
+            closeEverything();
         }
 
         this.username = username;
@@ -76,7 +77,7 @@ public class Client {
                     writer.println(username + ": " + clientMessage);
 
                     if(clientMessage.contains("/name")) {
-                        String newUsername = clientMessage.split(" ")[1];
+                        String newUsername = clientMessage.split(" ", 2)[1];
                         setUsername(newUsername);
                     }
 
@@ -104,7 +105,7 @@ public class Client {
                 socket.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error closing resources: " + e.getMessage());
         }
     }
 

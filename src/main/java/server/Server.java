@@ -7,7 +7,7 @@ import java.net.Socket;
 public class Server {
     private int port;
     private ServerSocket serverSocket;
-    private ClientHandler clients;
+
     public Server(int port) {
         this.port = port;
     }
@@ -26,7 +26,7 @@ public class Server {
         while (true) {
                 Socket clientSocket = serverSocket.accept();
 
-                clients = new ClientHandler(clientSocket);
+                ClientHandler clients = new ClientHandler(clientSocket);
                 System.out.println(clients.getUsername() + " has connected.");
 
                 Thread thread = new Thread(clients);
@@ -34,17 +34,21 @@ public class Server {
             }
 
         } catch (IOException e) {
+            System.out.println("Error starting the server: " + e.getMessage());
             closeServerSocket();
         }
     }
 
+    /**
+     * Closes the server socket.
+     */
     public void closeServerSocket() {
-        if(serverSocket != null) {
-            try {
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            System.out.println("Error closing server socket: " + e.getMessage());
         }
     }
 

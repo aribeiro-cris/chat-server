@@ -11,11 +11,11 @@ public class ClientHandler implements Runnable {
     private PrintWriter writer;
     private String username;
     public static CopyOnWriteArrayList<ClientHandler> availableClients = new CopyOnWriteArrayList<>();
-    private Commands[] commands = Commands.values();
+    private final Commands[] commands = Commands.values();
 
     /**
      * This method initializes a ClientHandler object to handle communication with a client connected via the provided socket
-     * @param socket
+     * @param socket the client's socket
      */
     public ClientHandler(Socket socket) {
         try {
@@ -84,7 +84,7 @@ public class ClientHandler implements Runnable {
 
     /**
      * This method sends a message to all connected clients except the current client
-     * @param message
+     * @param message the message to broadcast
      */
     private void broadcastMessage(String message) {
         for (ClientHandler client : availableClients) {
@@ -110,7 +110,7 @@ public class ClientHandler implements Runnable {
                 socket.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error closing resources: " + e.getMessage());
         }
     }
 
@@ -124,10 +124,8 @@ public class ClientHandler implements Runnable {
 
     /**
      * This method handles the execution of the help command requested by a client
-     * @throws IOException
      */
-    public void executeHelpCommand() throws IOException {
-        System.out.println(username + " asked for the help command.");
+    public void executeHelpCommand() {
 
         for (Commands command : commands) {
             writer.println(command + ": " + command.getDescription());
@@ -137,41 +135,41 @@ public class ClientHandler implements Runnable {
     /**
      * This method executes the list command requested by a client
      * It prints the list of currently available clients to the client who requested the list command
-     * @throws IOException
      */
-    public void executeListCommand() throws IOException {
-        System.out.println(username + " asked for the list command.");
+    public void executeListCommand() {
+        StringBuilder clientList = new StringBuilder("Connected clients:");
 
-        writer.println(availableClients);
+        for (ClientHandler client : availableClients) {
+            clientList.append("\n").append(client.username);
+        }
+        writer.println(clientList);
     }
 
     /**
      * This method executes the whisper command requested by a client, sending a private message to another specific client
-     * @param messageClient
-     * @throws IOException
+     * @param messageClient the message containing the whisper command
      */
-    public void executeWhisperCommand(String messageClient) throws IOException {
-        String usernameToSendWhisper = messageClient.split(" ")[2];
-        System.out.println(username + " wants to send a private message to " + usernameToSendWhisper);
-
-        int aux = messageClient.indexOf(usernameToSendWhisper); //auxiliary var to find the first index of the usernameToSendWhisper
-        String whisper = messageClient.substring(aux + usernameToSendWhisper.length() + 1);
+    public void executeWhisperCommand(String messageClient) {
+        String[] parts = messageClient.split(" ", 4);
+        String recipient = parts[2];
+        String whisperMessage = parts[3];
 
         for (ClientHandler client : availableClients) {
-            if (client.username.equals(usernameToSendWhisper)) {
-                client.writer.println(username + " whispered to you: " + whisper);
+            if (client.username.equals(recipient)) {
+                client.writer.println(username + " whispered to you: " + whisperMessage);
+                return;
             }
         }
+        writer.println("User " + recipient + " not found.");
     }
 
     /**
      * This method executes the name command requested by a client, allowing them to change their username
-     * @param messageClient
+     * @param messageClient the message containing the name command
      */
     public void executeNameCommand(String messageClient) {
-        String newUsername = messageClient.split(" ")[2]; //to make it better, index 2 is the substring after name
-        System.out.println(username + " has changed the username to " + newUsername);
-        broadcastMessage(username + " has changed the username to " + newUsername);
+        String newUsername = messageClient.split(" ", 3)[2];
+        broadcastMessage(username + " has changed their username to " + newUsername);
         setUsername(newUsername);
     }
 
